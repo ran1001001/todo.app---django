@@ -1,0 +1,15 @@
+{% extends "layout.html" %}
+
+{% block body %}
+        <h1>
+            MY TODOS:
+        </h1>
+        <ul>
+            {% for todo in todos %}
+                <li><a href="{% url "view_todo" todo.id %}">{{ todo.todo }}</a></li>
+            {% empty %}
+                <li>No todos.</li>
+            {% endfor %}
+        </ul>
+        <a href="{% url "add" %}">Add todo</a>
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+
+{% block body %}
+<form action="{% url "add" %}" method="post">
+    {% csrf_token %}
+        <input type="text" name="todo" placeholder="Todo" required>
+        <input type="text" name="description" placeholder="Description">
+        <input type="checkbox" name="status" value="True">
+        <input type="submit">
+    </form>
+{% endblock %}
