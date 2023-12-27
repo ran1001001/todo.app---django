@@ -12,8 +12,14 @@ def index(request):
 
 
 def view_todo(request, todo_id):
+    s = request.GET.get("stat", False)
+    if s is True:
+        status = True
+    else:
+        status = s
     return render(request, "view.html", {
-        "todo": Todo.objects.get(pk=todo_id)
+        "todo": Todo.objects.get(pk=todo_id),
+        "status": status
     })
 
 
@@ -21,9 +27,7 @@ def add(request):
     if request.method == "POST":
         todo = request.POST["todo"]
         description = request.POST["description"]
-        status = request.POST.get("status", False)
-        t = Todo(todo=todo, description=description, status=status)
-        t.save()
+        Todo(todo=todo, description=description, status=False).save()
         return HttpResponseRedirect(reverse("index"))
     return render(request, "add.html")
 
