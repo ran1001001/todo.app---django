@@ -5,29 +5,40 @@ from .models import Todo
 # Create your views here.
 
 
+def initialize_session(request):
+    if "todos" not in request.session:
+        request.session["todos"] = []
+
+
 def index(request):
+    initialize_session(request)
+    user_todos = Todo.objects.filter(id__in=request.session["todos"])
+    print(request.session["todos"])
     return render(request, "index.html", {
-        "todos": Todo.objects.all()
+        "todos": user_todos
     })
 
 
 def view_todo(request, todo_id):
-    s = request.GET.get("stat", False)
-    if s is True:
-        status = True
-    else:
-        status = s
+    todo = Todo.objects.get(pk=todo_id)
+    if request.GET.get("stat"):
+        todo.status = True
+        todo.save()
     return render(request, "view.html", {
-        "todo": Todo.objects.get(pk=todo_id),
-        "status": status
+        "todo": todo,
+        "status": todo.status
     })
 
 
 def add(request):
+    initialize_session(request)
     if request.method == "POST":
         todo = request.POST["todo"]
         description = request.POST["description"]
-        Todo(todo=todo, description=description, status=False).save()
+        todo_object = Todo.objects.create(todo=todo, description=description,
+                                          status=False)
+        request.session['todos'].append(todo_object.pk)
+        request.session.modified = True
         return HttpResponseRedirect(reverse("index"))
     return render(request, "add.html")
 
